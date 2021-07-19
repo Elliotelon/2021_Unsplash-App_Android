@@ -64,5 +64,9 @@ dependencies {
     //retrofit2 logging interceptor -
     implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
 
+    //glide 이미지 라이브러리
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
 
 }

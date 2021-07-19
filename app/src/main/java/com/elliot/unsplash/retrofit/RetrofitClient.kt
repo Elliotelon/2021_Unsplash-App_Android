@@ -1,6 +1,10 @@
 package com.elliot.unsplash.retrofit
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import com.elliot.unsplash.App
 import com.elliot.unsplash.utils.API
 import com.elliot.unsplash.utils.Constants
 import com.elliot.unsplash.utils.isJsonArray
@@ -67,7 +71,16 @@ object RetrofitClient {
                                         .url(addedUrl)
                                         .method(originalRequest.method, originalRequest.body)
                                         .build()
-                return chain.proceed(finalRequest)
+
+                val response = chain.proceed(finalRequest)
+                if(response.code != 200){
+                    Handler(Looper.getMainLooper()).post{
+                        Toast.makeText(App.instance, "${response.code} 에러입니다.", Toast.LENGTH_SHORT).show()
+
+                    }
+                }
+
+                return response
             }
 
         })
