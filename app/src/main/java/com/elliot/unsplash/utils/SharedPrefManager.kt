@@ -10,6 +10,33 @@ object SharedPrefManager {
     private const val SHARED_SEARCH_HISTORY = "shared_search_history"
     private const val KEY_SEARCH_HISTORY = "key_search_history"
 
+    private const val SHARED_SEARCH_HISTORY_MODE = "shared_search_history_mode"
+    private const val KEY_SEARCH_HISTORY_MODE = "key_search_history_mode"
+
+    //검색어 저장 모드 설정하기
+    fun setSearchHistoryMode(isActivated : Boolean){
+        Log.d(Constants.TAG, "SharedPrefManager - setSearchHistoryMode() called / isActivated : $isActivated")
+
+        //Shared 가져오기
+        val shared = App.instance.getSharedPreferences(SHARED_SEARCH_HISTORY_MODE, Context.MODE_PRIVATE)
+
+        //Shared Editor 가져오기
+        val editor = shared.edit()
+
+        editor.putBoolean(KEY_SEARCH_HISTORY_MODE, isActivated)
+
+        editor.apply()
+    }
+
+    //검색어 저장 모드 확인하기
+    fun checkSearchHistoryMode() : Boolean{
+
+        //Shared 가져오기
+        val shared = App.instance.getSharedPreferences(SHARED_SEARCH_HISTORY_MODE, Context.MODE_PRIVATE)
+
+        return shared.getBoolean(KEY_SEARCH_HISTORY_MODE, false)
+    }
+
     //검색 목록을 저장
     fun storeSearchHistoryList(searchHistoryList : MutableList<SearchData>){
         Log.d(Constants.TAG, "SharedPrefManager - storeSearchHistoryList() called")
@@ -49,5 +76,22 @@ object SharedPrefManager {
         }
 
         return storedSearchHistoryList
+    }
+
+    //검색 목록 지우기
+    fun clearSearchHistoryList(){
+        Log.d(Constants.TAG, "SharedPrefManager - clearSearchHistoryList() called")
+
+        //Shared 가져오기
+        val shared = App.instance.getSharedPreferences(SHARED_SEARCH_HISTORY, Context.MODE_PRIVATE)
+
+        //Shared Editor 가져오기
+        val editor = shared.edit()
+
+        //해당 데이터 지우기
+        editor.clear()
+
+        //변경 사항 적용
+        editor.apply()
     }
 }
