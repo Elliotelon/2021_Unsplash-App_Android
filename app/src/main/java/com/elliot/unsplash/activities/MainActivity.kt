@@ -1,4 +1,4 @@
-package com.elliot.unsplash
+package com.elliot.unsplash.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.elliot.unsplash.R
 import com.elliot.unsplash.databinding.ActivityMainBinding
 import com.elliot.unsplash.retrofit.RetrofitManager
 import com.elliot.unsplash.utils.Constants
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
             //검색 api 호출
             RetrofitManager.instance.searchPhotos(searchTerm = binding.searchTermEditText.text.toString(), completion = {
-                responseState, responseDataArrayList ->
+                    responseState, responseDataArrayList ->
 
                 when(responseState){
                     RESPONSE_STATUS.OKAY -> {

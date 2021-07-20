@@ -1,4 +1,4 @@
-package com.elliot.unsplash
+package com.elliot.unsplash.activities
 
 import android.app.SearchManager
 import android.content.Context
@@ -13,12 +13,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.elliot.unsplash.R
 import com.elliot.unsplash.model.Photo
+import com.elliot.unsplash.model.SearchData
 import com.elliot.unsplash.recyclerview.PhotoGridRecyclerViewAdapter
 import com.elliot.unsplash.utils.Constants
-import com.google.android.material.appbar.AppBarLayout
+import com.elliot.unsplash.utils.SharedPrefManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PhotoCollectionActivity: AppCompatActivity(),
                                 SearchView.OnQueryTextListener,
@@ -36,6 +40,9 @@ class PhotoCollectionActivity: AppCompatActivity(),
 
     //서치뷰 EditText
     private lateinit var mySearchViewEditText : EditText
+
+    //검색기록 배열
+    private var searchHistoryList = ArrayList<SearchData>()
 
     private val topAppBar by lazy {findViewById<MaterialToolbar>(R.id.top_app_bar)}
     private val searchHistoryView by lazy {findViewById<LinearLayout>(R.id.linear_search_history_view)}
@@ -69,6 +76,13 @@ class PhotoCollectionActivity: AppCompatActivity(),
         val recyclerView = findViewById<RecyclerView>(R.id.my_photo_recycler_view)
         recyclerView.layoutManager = GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false)
         recyclerView.adapter = photoGridRecyclerViewAdapter
+
+        //저장된 검색기록 가져오기
+        searchHistoryList = SharedPrefManager.getSearchHistoryList() as ArrayList<SearchData>
+
+        searchHistoryList.forEach {
+            Log.d(Constants.TAG, "저장된 검색기록 - it.term : ${it.term}, it.timestamp : ${it.timestamp}")
+        }
 
     }//
 
@@ -125,6 +139,11 @@ class PhotoCollectionActivity: AppCompatActivity(),
             //api 호출
 
             //검색어 저장
+
+            val newSearchData = SearchData(term =query, timestamp = Date().toString())
+
+            searchHistoryList.add(newSearchData)
+            SharedPrefManager.storeSearchHistoryList(searchHistoryList)
         }
         mySearchView.setQuery("", false)
         mySearchView.clearFocus()
