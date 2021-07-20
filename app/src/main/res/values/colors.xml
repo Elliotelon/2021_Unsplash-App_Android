@@ -2,9 +2,14 @@
 <resources>
     <color name="purple_200">#EC407A</color>
     <color name="purple_500">#EC407A</color>
-    <color name="purple_700">#EC407A</color>
+    <color name="purple_700">#673AB7</color>
     <color name="teal_200">#EC407A</color>
     <color name="teal_700">#EC407A</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primaryColor">#EC407A</color>
+    <color name="colorLightGray">#BABABA</color>
+    <color name="Gray">#7B7B7B</color>
+    <color name="colorLightPink">#FFB3B3</color>
 </resources>
