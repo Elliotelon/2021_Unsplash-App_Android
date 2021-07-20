@@ -80,5 +80,9 @@ dependencies {
     //Rx Binding
     implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
 
+    //코루틴
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0-M1'
+
 
 }

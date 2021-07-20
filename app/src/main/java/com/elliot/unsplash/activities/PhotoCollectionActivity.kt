@@ -21,10 +21,7 @@ import com.elliot.unsplash.recyclerview.ISearchHistoryRecyclerView
 import com.elliot.unsplash.recyclerview.PhotoGridRecyclerViewAdapter
 import com.elliot.unsplash.recyclerview.SearchHistoryRecyclerViewAdapter
 import com.elliot.unsplash.retrofit.RetrofitManager
-import com.elliot.unsplash.utils.Constants
-import com.elliot.unsplash.utils.RESPONSE_STATUS
-import com.elliot.unsplash.utils.SharedPrefManager
-import com.elliot.unsplash.utils.toSimpleString
+import com.elliot.unsplash.utils.*
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.jakewharton.rxbinding4.widget.textChanges
@@ -32,9 +29,15 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+import kotlin.coroutines.CoroutineContext
 
 class PhotoCollectionActivity : AppCompatActivity(),
                                 SearchView.OnQueryTextListener,
@@ -68,8 +71,14 @@ class PhotoCollectionActivity : AppCompatActivity(),
 
     private val searchHistoryRVLabel by lazy {findViewById<TextView>(R.id.search_history_recycler_view_label)}
 
+    /* rx 적용부분
     //옵저버블 통합 제거를 위한 CompositeDisposable
     private var myCompositeDisposable = CompositeDisposable()
+    */
+
+    private var myCoroutineJob : Job = Job()
+    private val myCoroutineContext : CoroutineContext
+        get() = Dispatchers.IO + myCoroutineJob
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,8 +128,13 @@ class PhotoCollectionActivity : AppCompatActivity(),
     }//onCreate
 
     override fun onDestroy() {
+        Log.d(Constants.TAG, "PhotocollectionActivity - onDestroy() called")
+
+        /* rx 적용부분
         //모두 삭제
         myCompositeDisposable.clear()
+        */
+        myCoroutineContext.cancel()
         super.onDestroy()
     }
 
@@ -188,6 +202,7 @@ class PhotoCollectionActivity : AppCompatActivity(),
             //서치뷰에서 EditText를 가져온다.
             mySearchViewEditText = this.findViewById(androidx.appcompat.R.id.search_src_text)
 
+            /* rx 적용부분
             //EditText 옵저버블
             val editTextChangeObservable = mySearchViewEditText.textChanges()
 
@@ -219,6 +234,27 @@ class PhotoCollectionActivity : AppCompatActivity(),
                     )
             //살아있는 옵저버블을 compositeDisposable 에 추가
             myCompositeDisposable.add(searchEditTextSubscription)
+
+             */
+
+            // Rx의 스케줄러와 비슷
+            //IO 스레드에서 돌리겠다.
+            GlobalScope.launch(context = myCoroutineContext){
+                //editText가 변경되었을때
+                val editTextFlow = mySearchViewEditText.textChangesToFlow()
+
+                editTextFlow
+                    //연산자들
+                    // 입력되고  나서 2초뒤에 받는다.
+                    .debounce(2000)
+                    .filter {
+                        it?.length!! > 0
+                    }
+                    .onEach {
+                    Log.d(Constants.TAG, "flow로 받는다 $it")
+                    }
+                    .launchIn(this)
+            }
         }
 
         mySearchViewEditText.apply {
