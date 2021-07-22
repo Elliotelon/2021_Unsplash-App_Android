@@ -4,8 +4,7 @@
 * 사진 검색 기능
 * 검색기록 저장 기능
 * 검색기록 삭제 기능
-___
-
+* 
 ## :orange_book: 라이브러리   
 * Material
 * Retrofit2
